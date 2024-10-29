@@ -1,0 +1,527 @@
+<!-- app/templates/chat.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat with {{ companion.class_name }} - {{ companion.subject }}</title>
+    <!-- Heroicons CDN for Icons -->
+    <script src="https://unpkg.com/heroicons@2.0.13/dist/heroicons.min.js"></script>
+    <!-- Include Marked.js, DOMPurify, and MathJax via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.3.4/dist/purify.min.js"></script>
+    <!-- MathJax Configuration -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)'], ['$', '$']],
+                displayMath: [['\\[', '\\]'], ['$$', '$$']]
+            },
+            svg: {
+                fontCache: 'global'
+            },
+            options: {
+                processSectionDelay: 0  // **Improves dynamic content processing**
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <!-- Link to the external styles.css file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Inline styles for markdown content -->
+    <style>
+        /* Refined Markdown Styles */
+        .markdown-content {
+            font-family: "Arial", sans-serif;
+            color: #333;
+            line-height: 1.7;
+        }
+        .markdown-content h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #2c3e50;
+            border-bottom: 2px solid #ff8800;
+            padding-bottom: 0.5rem;
+        }
+        .markdown-content h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #34495e;
+        }
+        .markdown-content p {
+            margin-bottom: 1rem;
+            color: #4d4d4d;
+        }
+        .markdown-content blockquote {
+            padding: 0.75rem 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ff8800;
+            background-color: #f7f7f7;
+            font-style: italic;
+        }
+        .markdown-content pre {
+            background-color: #222222;
+            color: #dbdbdb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+        .markdown-content code {
+            background-color: #222222;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+        }
+        .markdown-content ul, .markdown-content ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .markdown-content a {
+            color: #ff8800;
+            text-decoration: none;
+        }
+        .markdown-content a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="main-body">
+    <!-- Header -->
+    <header class="header">
+        <!-- Sidebar Toggle Button -->
+        <button id="open-sidebar-btn" class="icon-button" aria-label="Open Materials">
+            <!-- Menu Icon (Heroicons) -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+
+        <!-- Title -->
+        <h2 class="header-title">
+            Chat with {{ companion.class_name }} - {{ companion.subject }}
+        </h2>
+
+        <!-- Home Button -->
+        <a href="{{ url_for('auth.student_dashboard') }}" class="icon-button" aria-label="Go to Dashboard">
+            <!-- Home Icon (Heroicons) -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 5v6h6v-6h6" />
+            </svg>
+        </a>
+    </header>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar" aria-hidden="true">
+        <div class="sidebar-header">
+            <h2 class="sidebar-title">Materials</h2>
+            <button id="close-sidebar-btn" class="icon-button" aria-label="Close Sidebar">
+                <!-- Close Icon (Heroicons) -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        {% if materials %}
+            <div class="sidebar-content">
+                <div class="material-list">
+                    {% for material in materials %}
+                        <div class="material-item">
+                            <input id="material{{ loop.index }}" name="materials" type="checkbox" value="{{ material.id }}" class="material-checkbox">
+                            <label for="material{{ loop.index }}" class="material-label">
+                                {{ material.filename }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Overlay -->
+    <div id="overlay" class="overlay" aria-hidden="true"></div>
+
+    <!-- Main Chat Area -->
+    <main class="main-chat">
+        <!-- Chat Messages -->
+        <div id="chat-messages" class="chat-messages">
+            {% for msg in messages %}
+                {% if msg.sender_type == 'student' %}
+                    <!-- Student Message -->
+                    <div class="message-container justify-end">
+                        <div class="student-message">
+                            {{ msg.content }}
+                        </div>
+                    </div>
+                {% elif msg.sender_type == 'AI' %}
+                    <!-- AI Response -->
+                    <div class="message-container justify-start">
+                        <div class="ai-message markdown-content ai-response" data-markdown="{{ msg.content | e }}">
+                            <!-- Content will be rendered by JavaScript -->
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <!-- Typing Indicator -->
+            <div id="typing-indicator" class="message-container justify-start hidden">
+                <div class="ai-message italic">
+                    Bot is typing...
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input-container">
+            <form id="message-form" class="message-form">
+                <!-- CSRF Token -->
+                {{ form.hidden_tag() }}
+                <textarea id="message-textarea" name="message" placeholder="Type your message here..." class="message-textarea" rows="1"></textarea>
+                <!-- Reset Button -->
+                <button type="button" onclick="resetConversation()" class="icon-button" aria-label="Reset Conversation">
+                    <!-- Refresh Icon (Heroicons) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="transform-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1112 4.359" />
+                    </svg>
+                </button>
+                <!-- Send Button -->
+                <button type="submit" id="send-button" class="send-button" aria-label="Send Message">
+                    <!-- Paper Airplane Icon (Heroicons) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="rotate-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2z" />
+                    </svg>
+                </button>
+            </form>
+            {% for error in form.message.errors %}
+                <p class="error-text">{{ error }}</p>
+            {% endfor %}
+        </div>
+    </main>
+
+    <!-- Hidden Reset Form -->
+    <form id="reset-form" method="POST" action="{{ url_for('auth.reset_conversation', companion_id=companion.id) }}" class="d-none">
+        {{ form.hidden_tag() }}
+    </form>
+
+    <script>
+        /**
+         * Function to escape LaTeX delimiters.
+         * @param {string} content - The content to escape.
+         * @returns {string} - The escaped content.
+         */
+        function escapeLatex(content) {
+            // Temporarily replace LaTeX delimiters with placeholders
+            return content
+                .replace(/\\\(/g, '##LATEX_INLINE_OPEN##')
+                .replace(/\\\)/g, '##LATEX_INLINE_CLOSE##')
+                .replace(/\\\[/g, '##LATEX_BLOCK_OPEN##')
+                .replace(/\\\]/g, '##LATEX_BLOCK_CLOSE##');
+        }
+    
+        /**
+         * Function to unescape LaTeX delimiters.
+         * @param {string} content - The content to unescape.
+         * @returns {string} - The unescaped content.
+         */
+        function unescapeLatex(content) {
+            // Restore the original LaTeX delimiters
+            return content
+                .replace(/##LATEX_INLINE_OPEN##/g, '\\(')
+                .replace(/##LATEX_INLINE_CLOSE##/g, '\\)')
+                .replace(/##LATEX_BLOCK_OPEN##/g, '\\[')
+                .replace(/##LATEX_BLOCK_CLOSE##/g, '\\]');
+        }
+    
+        /**
+         * Function to render Markdown and LaTeX.
+         * @param {HTMLElement} element - The element containing markdown content.
+         */
+        function renderMarkdown(element) {
+            const originalMarkdown = element.getAttribute('data-markdown');
+            const escapedMarkdown = escapeLatex(originalMarkdown);
+            let htmlContent = marked.parse(escapedMarkdown);
+            htmlContent = unescapeLatex(htmlContent);
+            htmlContent = DOMPurify.sanitize(htmlContent);
+            element.innerHTML = htmlContent;
+    
+            // Trigger MathJax to typeset the new content
+            if (window.MathJax) {
+                MathJax.typesetPromise([element]).catch(function(err) {
+                    console.error('MathJax typeset failed: ', err);
+                });
+            }
+        }
+    
+        // Debounce function to limit how often a function can fire.
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                const later = function() {
+                    clearTimeout(timeout);
+                    func.apply(this, args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    
+        // Debounced typeset function to optimize MathJax rendering during streaming
+        const debouncedTypeset = debounce(function(element) {
+            MathJax.typesetPromise([element]).catch(function(err) {
+                console.error('MathJax typeset failed: ', err);
+            });
+        }, 500);
+    
+        document.addEventListener("DOMContentLoaded", function() {
+            // Initial rendering of existing AI responses
+            const aiResponses = document.querySelectorAll('.ai-response');
+            aiResponses.forEach(function(element) {
+                renderMarkdown(element);
+            });
+    
+            // Show More/Show Less functionality for reports.html reference
+            // Not directly applicable to chat.html but kept here for potential reuse
+            document.querySelectorAll('.toggle-content').forEach(function(toggleLink) {
+                toggleLink.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const messageDiv = this.closest('.message-content');
+                    const shortContent = messageDiv.querySelector('.short-content');
+                    const fullContent = messageDiv.querySelector('.full-content');
+    
+                    if (fullContent.classList.contains('d-none')) {
+                        shortContent.classList.add('d-none');
+                        fullContent.classList.remove('d-none');
+                        renderMarkdown(fullContent);
+                        this.textContent = 'Show Less';
+                    } else {
+                        shortContent.classList.remove('d-none');
+                        fullContent.classList.add('d-none');
+                        this.textContent = 'Show More';
+                    }
+                });
+            });
+        });
+    
+        // Sidebar Toggle Functionality
+        const openSidebarBtn = document.getElementById('open-sidebar-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+    
+        openSidebarBtn.addEventListener('click', () => {
+            sidebar.style.width = '250px';
+            overlay.classList.remove('hidden');
+            sidebar.setAttribute('aria-hidden', 'false');
+            overlay.setAttribute('aria-hidden', 'false');
+        });
+    
+        closeSidebarBtn.addEventListener('click', () => {
+            sidebar.style.width = '0';
+            overlay.classList.add('hidden');
+            sidebar.setAttribute('aria-hidden', 'true');
+            overlay.setAttribute('aria-hidden', 'true');
+        });
+    
+        overlay.addEventListener('click', () => {
+            sidebar.style.width = '0';
+            overlay.classList.add('hidden');
+            sidebar.setAttribute('aria-hidden', 'true');
+            overlay.setAttribute('aria-hidden', 'true');
+        });
+    
+        // Reset Conversation Functionality
+        function resetConversation() {
+            if (confirm('Are you sure you want to reset the conversation?')) {
+                document.getElementById('reset-form').submit();
+            }
+        }
+    
+        // Function to get CSRF token from hidden input
+        function getCSRFToken() {
+            const csrfInput = document.querySelector('input[name="csrf_token"]');
+            return csrfInput ? csrfInput.value : '';
+        }
+    
+        // Typing Indicator and Chat Messages
+        const typingIndicator = document.getElementById('typing-indicator');
+        const chatMessages = document.getElementById('chat-messages');
+    
+        // Message Form Submission with Streaming
+        const messageForm = document.getElementById('message-form');
+        const sendButton = document.getElementById('send-button');
+        const messageTextarea = document.getElementById('message-textarea');
+    
+        // Variable to accumulate AI response
+        let aiResponse = '';
+    
+        messageForm.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+    
+            const userMessage = messageTextarea.value.trim();
+            if (!userMessage) {
+                return; // Do not send empty messages
+            }
+    
+            // Append user's message to chat
+            appendChat("You", userMessage);
+    
+            // Clear the input field
+            messageTextarea.value = '';
+            messageTextarea.style.height = 'auto'; // Reset height
+    
+            // Disable send button and textarea
+            sendButton.disabled = true;
+            sendButton.classList.add('opacity-50', 'cursor-not-allowed');
+            messageTextarea.disabled = true;
+            messageTextarea.classList.add('opacity-50', 'cursor-not-allowed');
+    
+            // Show typing indicator
+            typingIndicator.classList.remove('hidden');
+    
+            try {
+                // Prepare the payload
+                const payload = {
+                    message: userMessage,
+                };
+    
+                // Collect selected materials
+                const materialCheckboxes = document.querySelectorAll('#sidebar input[name="materials"]:checked');
+                const materials = [];
+                materialCheckboxes.forEach(function(checkbox) {
+                    materials.push(checkbox.value);
+                });
+                payload.materials = materials;
+    
+                // Send the message via Fetch API with streaming
+                const response = await fetch('{{ url_for("auth.chat_send", companion_id=companion.id) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify(payload)
+                });
+    
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    appendChat("System", errorData.error || "An error occurred.", true);
+                    return;
+                }
+    
+                // Check if the response is a stream
+                const contentType = response.headers.get('Content-Type') || '';
+                if (response.body && response.body.getReader && (contentType.includes('text/plain') || contentType.includes('application/octet-stream'))) {
+                    // Handle as a stream
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder('utf-8');
+                    let done = false;
+                    aiResponse = ''; // Reset AI response
+    
+                    // Create a new AI message container
+                    const aiMessageElement = createAIMessage();
+    
+                    while (!done) {
+                        const { value, done: doneReading } = await reader.read();
+                        done = doneReading;
+                        const chunk = decoder.decode(value, { stream: !doneReading });
+                        if (chunk) {
+                            aiResponse += chunk;
+                            // Update the data-markdown attribute
+                            aiMessageElement.setAttribute('data-markdown', aiResponse);
+                            // Render the markdown and LaTeX
+                            renderMarkdown(aiMessageElement);
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }
+                    }
+                } else {
+                    // Handle as a complete response
+                    const aiResponseText = await response.text();
+                    if (aiResponseText.trim()) {
+                        // Create a new AI message container
+                        const aiMessageElement = createAIMessage();
+                        // Set the data-markdown attribute
+                        aiMessageElement.setAttribute('data-markdown', aiResponseText);
+                        // Render the markdown and LaTeX
+                        renderMarkdown(aiMessageElement);
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
+                }
+    
+            } catch (error) {
+                console.error('Error:', error);
+                appendChat("System", "A small error occurred, try refreshing the page!", true);
+            } finally {
+                // Remove the typing indicator
+                typingIndicator.classList.add('hidden');
+    
+                // Re-enable the send button and textarea
+                sendButton.disabled = false;
+                sendButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                messageTextarea.disabled = false;
+                messageTextarea.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        });
+    
+        /**
+         * Appends a message to the chat area.
+         * @param {string} sender - The sender of the message ('You', 'Bot', 'System').
+         * @param {string} message - The message content.
+         * @param {boolean} [isSystem=false] - Whether the message is a system notification.
+         */
+        function appendChat(sender, message, isSystem = false) {
+            const messageContainer = document.createElement('div');
+            messageContainer.classList.add('message-container', sender === 'You' ? 'justify-end' : 'justify-start');
+
+            const messageBox = document.createElement('div');
+
+            if (sender === 'You') {
+                messageBox.classList.add('student-message');
+                messageBox.textContent = message;
+            } else if (sender === 'Bot') {
+                messageBox.classList.add('ai-message', 'markdown-content', 'ai-response');
+                messageBox.setAttribute('data-markdown', message);
+            } else { // System
+                messageBox.classList.add('system-message');
+                messageBox.textContent = message;
+            }
+
+            messageContainer.appendChild(messageBox);
+            document.getElementById('chat-messages').appendChild(messageContainer);
+
+            if (sender === 'Bot') {
+                renderMarkdown(messageBox); // Render Markdown for AI responses
+            }
+
+            // Scroll to the bottom of the chat
+            document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+        }
+
+    
+        /**
+         * Creates a new AI message element in the chat.
+         * @returns {HTMLElement} - The AI message box element.
+         */
+        function createAIMessage() {
+            const messageContainer = document.createElement('div');
+            messageContainer.classList.add('message-container', 'justify-start');
+
+            const messageBox = document.createElement('div');
+            messageBox.classList.add('ai-message', 'markdown-content', 'ai-response');
+            messageBox.setAttribute('data-markdown', '');
+
+            messageContainer.appendChild(messageBox);
+            document.getElementById('chat-messages').appendChild(messageContainer);
+            document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+
+            return messageBox; // Return the message box for real-time content updates
+        }
+    </script>
+    
+</body>
+</html>
+{% endblock %}

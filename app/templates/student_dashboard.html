@@ -1,0 +1,110 @@
+<!-- app/templates/student_dashboard.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Optional: Include Alpine.js for simple interactivity -->
+    <script src="//unpkg.com/alpinejs" defer></script>
+</head>
+<body class="bg-[#fbfbfe] text-[#040316]">
+    <!-- Navbar -->
+    <nav class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <a href="{{ url_for('auth.home') }}" class="flex-shrink-0 flex items-center text-2xl font-bold text-[#ff8800]">
+                        Horizon Learning
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    <a href="{{ url_for('auth.logout') }}" class="text-sm font-medium text-gray-700 hover:text-[#ff8800]">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
+        <!-- Welcome Header -->
+        <div class="bg-[#ff8800] shadow rounded-lg p-6 mb-8 text-white">
+            <h1 class="text-3xl font-bold">Welcome, {{ current_user.name }}!</h1>
+            <p class="mt-2">Manage your learning companions and enhance your educational experience.</p>
+        </div>
+
+        <!-- Link to Learning Companion Button -->
+        <div class="mb-8">
+            <button 
+                onclick="toggleLinkSection()" 
+                class="w-full bg-[#ff8800] text-white py-3 px-4 rounded-lg hover:bg-[#fb9b22] transition-colors duration-300"
+            >
+                Link to Learning Companion
+            </button>
+        </div>
+
+        <!-- Collapsible Link to Companion Input Section -->
+        <div id="linkSection" class="hidden bg-white shadow rounded-lg p-6 mb-8 transition-all duration-500">
+            <h2 class="text-2xl font-semibold mb-4">Link to a New Companion</h2>
+            <form action="{{ url_for('auth.link_companion') }}" method="POST">
+                <!-- CSRF Token -->
+                <input type="hidden" name="csrf_token" value="{{ csrf_token ()}}">
+                
+                <div class="mb-4">
+                    <label for="classCode" class="block text-gray-700 font-medium mb-2">Enter Class Code</label>
+                    <input
+                        type="text"
+                        id="classCode"
+                        name="class_code"
+                        placeholder="Enter class code"
+                        class="w-full border border-[#ff8800] p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff8800]"
+                        required
+                    >
+                    {% if error %}
+                        <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                    {% endif %}
+                </div>
+                <button type="submit" class="w-full bg-[#ff8800] text-white py-3 px-4 rounded-lg hover:bg-[#ff8800] transition-colors duration-300">
+                    Link Companion
+                </button>
+            </form>
+        </div>
+
+        <!-- Linked Companions Section -->
+        <div>
+            <h2 class="text-2xl font-semibold mb-6">Your Learning Companions</h2>
+            {% if companions %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for companion in companions %}
+                        <div class="bg-white shadow rounded-lg p-6 flex flex-col justify-between border border-[#ff8800]">
+                            <div>
+                                <h3 class="text-xl font-bold text-[#ff8800]">{{ companion.class_name }}</h3>
+                                <p class="mt-2 text-gray-600">Subject: {{ companion.subject }}</p>
+                            </div>
+                            <div class="mt-4">
+                                <a href="{{ url_for('auth.chat', companion_id=companion.id) }}" class="w-full bg-[#ff8800] text-white py-2 px-4 rounded-lg hover:bg-[#fb9b22] transition-colors duration-300 text-center">
+                                    Chat
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="bg-white shadow rounded-lg p-6">
+                    <p class="text-gray-600">You are not linked to any learning companions yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Optional JavaScript for Toggle Functionality -->
+    <script>
+        function toggleLinkSection() {
+            const linkSection = document.getElementById('linkSection');
+            linkSection.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>

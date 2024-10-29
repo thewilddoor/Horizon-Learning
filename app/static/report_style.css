@@ -1,0 +1,199 @@
+/* static/report_style.css */
+
+/* General Styles */
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #fbfbfe;
+    color: #040316;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.main-content {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 64px 16px;
+}
+
+.section-header {
+    margin-bottom: 48px;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+}
+
+/* Forms */
+.section-form {
+    margin-bottom: 32px;
+}
+
+.filter-form,
+.clear-form {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-label {
+    display: block;
+    color: #4a4a4a;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.form-select {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: #ff8800;
+    box-shadow: 0 0 0 2px rgba(255, 136, 0, 0.2);
+}
+
+.form-actions {
+    text-align: right;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-primary {
+    background-color: #ff8800;
+    color: #ffffff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #fb9b22;
+}
+
+.btn-danger {
+    background-color: #dc2626;
+    color: #ffffff;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #b91c1c;
+}
+
+/* Table */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.messages-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.messages-table thead {
+    background-color: #f3f4f6;
+}
+
+.messages-table th,
+.messages-table td {
+    padding: 16px;
+    text-align: left;
+    font-size: 0.875rem;
+}
+
+.messages-table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #4a4a4a;
+}
+
+.messages-table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.messages-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.no-messages {
+    text-align: center;
+    color: #9ca3af;
+    padding: 24px;
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 9999px;
+}
+
+.badge-student {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.badge-ai {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-unknown {
+    background-color: #f3f4f6;
+    color: #4b5563;
+}
+
+/* Message Content */
+.message-content .short-content {
+    display: inline;
+}
+
+.message-content .full-content.hidden {
+    display: none;
+}
+
+.message-content .full-content {
+    display: inline;
+}
+
+.toggle-content {
+    color: #ff8800;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none;
+}
+
+@media (min-width: 640px) {
+    .main-content {
+        padding: 64px 24px;
+    }
+}

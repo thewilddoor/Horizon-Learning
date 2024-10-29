@@ -1,0 +1,69 @@
+<!-- app/templates/login.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Horizon Learning</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- AOS Library -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <!-- Alpine.js for Interactivity (if needed) -->
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        /* Custom styles if needed */
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-[#fbfbfe] text-[#040316] min-h-screen flex items-center justify-center">
+    
+    <!-- Main Content -->
+    <main class="w-full max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg" data-aos="fade-up">
+        <h2 class="text-3xl font-semibold text-center mb-6">Login</h2>
+        <form method="POST" class="space-y-4">
+            {{ form.hidden_tag() }}
+            
+            <!-- Email Field -->
+            <div>
+                {{ form.email.label(class="block text-gray-700 font-medium mb-2") }}
+                {{ form.email(class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff8800]") }}
+                {% if form.email.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.email.errors[0] }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Password Field -->
+            <div>
+                {{ form.password.label(class="block text-gray-700 font-medium mb-2") }}
+                {{ form.password(class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff8800]") }}
+                {% if form.password.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.password.errors[0] }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Submit Button -->
+            <div>
+                <button type="submit" class="w-full bg-[#ff8800] text-white py-3 px-4 rounded-lg hover:bg-[#fb9b22] transition-colors duration-300 font-semibold">
+                    {{ form.submit.label.text }}
+                </button>
+            </div>
+        </form>
+    </main>
+    
+    <!-- AOS Initialization -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+    </script>
+    
+</body>
+</html>
