@@ -7,8 +7,36 @@
     <title>Teacher Dashboard - Horizon Learning</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Optional: Include Alpine.js for simple interactivity -->
+    <!-- Include Alpine.js for interactivity -->
     <script src="//unpkg.com/alpinejs" defer></script>
+    <!-- Custom CSS for flip card -->
+    <style>
+        .flip-card {
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 0.5rem;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+            overflow-y: auto;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+    </style>
 </head>
 <body class="bg-[#fbfbfe] text-[#040316]">
     <!-- Navbar -->
@@ -59,33 +87,65 @@
         {% if companions %}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {% for companion in companions %}
-                    <div class="bg-white rounded-lg shadow-md p-6 flex flex-col justify-between border border-[#ff8800] relative">
-                        <div>
-                            <h4 class="text-2xl font-semibold text-[#040316] mb-2">{{ companion.className }}</h4>
-                            <p class="text-lg text-gray-600 mb-4">Subject: {{ companion.subject }}</p>
-                            <div class="text-md text-gray-500 mb-4">
-                                <span>Class Code:</span>
-                                <div class="flex items-center justify-between mt-2">
-                                    <input
-                                        type="text"
-                                        value="{{ companion.class_code }}"
-                                        readonly
-                                        class="bg-transparent border border-[#ff8800] text-sm focus:outline-none text-[#040316] p-2 rounded"
-                                    />
+                    <div class="flip-card w-full h-80"> <!-- Set fixed height -->
+                        <div x-data="{ flipped: false }" class="flip-card-inner" :class="{ 'rotate-y-180': flipped }">
+                            <!-- Front Side -->
+                            <div class="flip-card-front bg-white rounded-lg shadow-md p-6 flex flex-col justify-between border border-[#ff8800]">
+                                <div>
+                                    <h4 class="text-2xl font-semibold text-[#040316] mb-2">{{ companion.class_name }}</h4>
+                                    <p class="text-lg text-gray-600 mb-4">Subject: {{ companion.subject }}</p>
+                                    <div class="text-md text-gray-500 mb-4">
+                                        <span>Class Code:</span>
+                                        <div class="flex items-center justify-between mt-2">
+                                            <input
+                                                type="text"
+                                                value="{{ companion.class_code }}"
+                                                readonly
+                                                class="bg-transparent border border-[#ff8800] text-sm focus:outline-none text-[#040316] p-2 rounded"
+                                            />
+                                            <button onclick="copyToClipboard('{{ companion.class_code }}')" class="ml-2 text-[#ff8800] hover:text-[#fb9b22] focus:outline-none">
+                                                Copy
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between mt-4">
+                                    <button @click="flipped = true" class="bg-blue-500 text-white py-2 px-3 rounded-lg hover:bg-blue-600 transition-colors duration-200 mr-2 flex-grow">
+                                        View Students
+                                    </button>
+                                    <a href="{{ url_for('auth.edit_learning_companion', companion_id=companion.id) }}" class="bg-[#ff8800] text-white py-2 px-3 rounded-lg hover:bg-[#fb9b22] transition-colors duration-200 ml-2 flex-grow text-center">
+                                        Edit
+                                    </a>
+                                    <form action="{{ url_for('auth.delete_learning_companion', companion_id=companion.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this learning companion?');" class="flex-grow ml-2">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors duration-300">
+                                            Delete
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
-                        </div>
-                        <div class="flex justify-between mt-4">
-                            <a href="{{ url_for('auth.edit_learning_companion', companion_id=companion.id) }}" class="w-full bg-[#ff8800] text-white py-2 px-3 rounded-lg hover:bg-[#fb9b22] transition-colors duration-200 mr-2">
-                                Edit
-                            </a>
-                            <form action="{{ url_for('auth.delete_learning_companion', companion_id=companion.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this learning companion?');">
-                                <!-- CSRF Token -->
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token ()}}">
-                                <button type="submit" class="w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors duration-300">
-                                    Delete
-                                </button>
-                            </form>
+                            <!-- Back Side -->
+                            <div class="flip-card-back bg-white rounded-lg shadow-md p-6 flex flex-col justify-between border border-[#ff8800]">
+                                <div>
+                                    <h4 class="text-2xl font-semibold text-[#040316] mb-2">Connected Students</h4>
+                                    {% if companion.students %}
+                                        <div class="mt-4 h-48 overflow-y-auto">
+                                            <ul class="list-disc list-inside">
+                                                {% for student in companion.students %}
+                                                    <li class="text-gray-600">{{ student.name }} ({{ student.email }})</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    {% else %}
+                                        <p class="text-gray-600">No students linked yet.</p>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <button @click="flipped = false" class="w-full bg-[#ff8800] text-white py-2 px-3 rounded-lg hover:bg-[#fb9b22] transition-colors duration-200 text-center">
+                                        Back
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}

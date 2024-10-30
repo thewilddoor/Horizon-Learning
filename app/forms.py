@@ -29,7 +29,7 @@ class BotForm(FlaskForm):
 class LearningCompanionForm(FlaskForm):
     class_name = StringField('Class Name', validators=[DataRequired(), Length(min=2, max=64)])
     subject = StringField('Subject', validators=[DataRequired(), Length(min=2, max=64)])
-    instructions = TextAreaField('Custom Instructions', validators=[DataRequired()])
+    instructions = TextAreaField('Custom Instructions(Optional)')
     bot = SelectField('Select Bot', coerce=int, validators=[DataRequired()])
     submit = SubmitField('Create')
 
@@ -54,7 +54,7 @@ class ChatForm(FlaskForm):
 class EditLearningCompanionForm(FlaskForm):
     class_name = StringField('Class Name', validators=[DataRequired(), Length(min=2, max=64)])
     subject = StringField('Subject', validators=[DataRequired(), Length(min=2, max=64)])
-    instructions = TextAreaField('Custom Instructions', validators=[DataRequired()])
+    instructions = TextAreaField('Custom Instructions(Optional)')
     bot = SelectField('Select Bot', coerce=int, validators=[DataRequired()])
     submit = SubmitField('Update')
 

@@ -23,6 +23,7 @@ from .utils import (
     check_message_limit, allowed_file, Coze, convert_file_to_text,
     generate_conversation_id
 )
+from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
 from flask import Blueprint
@@ -198,6 +199,26 @@ def delete_bot(bot_id):
     flash('Bot deleted successfully.', 'success')
     return redirect(url_for('auth.admin_dashboard'))
 
+@auth.route('/admin/users/delete/<int:user_id>', methods=['POST'])
+@login_required
+def delete_user(user_id):
+    if not current_user.is_admin():
+        flash('Access denied.', 'danger')
+        return redirect(url_for('auth.login'))
+    
+    user = User.query.get_or_404(user_id)
+
+    # Prevent deletion of admin users
+    if user.is_admin():
+        flash('Cannot delete admin users.', 'danger')
+        return redirect(url_for('auth.admin_dashboard'))
+
+    # Delete the user
+    db.session.delete(user)
+    db.session.commit()
+    flash('User deleted successfully.', 'success')
+    return redirect(url_for('auth.admin_dashboard'))
+
 # ------------------------
 # Teacher Routes
 # ------------------------
@@ -209,7 +230,7 @@ def teacher_dashboard():
         flash('Access denied.', 'danger')
         return redirect(url_for('auth.login'))
     # Fetch teacher's learning companions
-    companions = LearningCompanion.query.filter_by(teacher_id=current_user.id).all()
+    companions = LearningCompanion.query.options(joinedload(LearningCompanion.students)).filter_by(teacher_id=current_user.id).all()
     return render_template('teacher_dashboard.html', companions=companions)
 
 

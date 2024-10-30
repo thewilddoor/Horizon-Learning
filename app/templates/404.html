@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Page Not Found - Horizon Learning</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Include Alpine.js for interactivity -->
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <!-- Custom CSS for animations -->
+    <style>
+        /* Floating animation for the icon */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-[#fbfbfe] text-[#040316] min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <nav class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <a href="/" class="flex-shrink-0 flex items-center text-2xl font-bold text-[#ff8800]">
+                        Horizon Learning
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    <!-- Optional: Add navigation links if needed -->
+                    <a href="/logout" class="text-sm font-medium text-gray-700 hover:text-[#ff8800]">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex flex-col items-center justify-center py-10 sm:px-6 lg:px-8">
+        <!-- 404 Icon -->
+        <div class="mb-6">
+            <!-- Using Heroicons exclamation icon -->
+            <svg class="h-24 w-24 text-[#ff8800] float" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" />
+            </svg>
+        </div>
+        <!-- 404 Message -->
+        <h1 class="text-5xl font-bold mb-4">404</h1>
+        <p class="text-xl mb-8 text-center px-4">Oops! The page you're looking for doesn't exist.</p>
+        <!-- Button to go home -->
+        <a href="/" class="bg-[#ff8800] text-white py-3 px-6 rounded-lg hover:bg-[#fb9b22] transition-colors duration-300 flex items-center">
+            <!-- Home Icon -->
+            <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Go to Home
+        </a>
+    </main>
+
+    <!-- Footer (optional) -->
+    <footer class="bg-white shadow">
+        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
+            &copy; 2024 Horizon Learning. All rights reserved.
+        </div>
+    </footer>
+</body>
+</html>
