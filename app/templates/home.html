@@ -18,9 +18,21 @@
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         }
+        /* Loader Styles */
+        #loader {
+            transition: opacity 0.5s ease;
+        }
     </style>
 </head>
 <body class="bg-[#fbfbfe] text-[#040316]">
+
+    <!-- Loader -->
+    <div id="loader" class="fixed inset-0 bg-white flex items-center justify-center z-50">
+        <svg class="animate-spin h-12 w-12 text-[#ff8800]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+        </svg>
+    </div>
 
     <!-- Navbar -->
     <nav class="bg-white shadow fixed w-full z-10">
@@ -41,9 +53,9 @@
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto pt-24 px-4 sm:px-6 lg:px-8">
-
+    
         <!-- Hero Section -->
-        <section class="text-center mb-24" data-aos="fade-up">
+        <section class="text-center mb-24" data-aos="fade-up" data-aos-delay="100">
             <h1 class="text-5xl font-extrabold mb-6">Look Beyond the Horizon</h1>
             <p class="text-xl mb-8 max-w-2xl mx-auto">Revolutionizing education with AI-driven learning companions.</p>
             <div class="flex justify-center space-x-6">
@@ -53,12 +65,12 @@
         </section>
 
         <!-- About Section -->
-        <section class="mb-24" data-aos="fade-up">
+        <section class="mb-24" data-aos="fade-up" data-aos-delay="200">
             <div class="flex flex-col md:flex-row items-center">
-                <div class="md:w-1/2" data-aos="fade-right">
+                <div class="md:w-1/2" data-aos="fade-right" data-aos-delay="300">
                     <img src="{{ url_for('static', filename='images/education.png') }}" alt="Education" class="w-full rounded-lg shadow-lg">
                 </div>
-                <div class="md:w-1/2 mt-8 md:mt-0 md:pl-12" data-aos="fade-left">
+                <div class="md:w-1/2 mt-8 md:mt-0 md:pl-12" data-aos="fade-left" data-aos-delay="400">
                     <h2 class="text-3xl font-semibold mb-4">About Horizon Learning</h2>
                     <p class="mb-4">Horizon Learning connects students and teachers through AI, enhancing learning experiences and expanding education for all.</p>
                     <p>Our platform provides personalized academic assistance—from videos to notes—and allows teachers to efficiently manage and curate class materials. We are more than an education platform; we are a community of learners.</p>
@@ -67,23 +79,23 @@
         </section>
 
         <!-- Features Section -->
-        <section class="mb-24" data-aos="fade-up">
+        <section class="mb-24" data-aos="fade-up" data-aos-delay="500">
             <h2 class="text-3xl font-semibold text-center mb-12">Features</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
                 <!-- Feature 1 -->
-                <div class="text-center" data-aos="zoom-in">
+                <div class="text-center" data-aos="zoom-in" data-aos-delay="600">
                     <i class="bi bi-people-fill text-6xl text-[#ff8800] mb-6"></i>
                     <h3 class="text-2xl font-semibold mb-3">Community</h3>
                     <p>Join a vibrant community of learners and educators committed to expanding educational horizons.</p>
                 </div>
                 <!-- Feature 2 -->
-                <div class="text-center" data-aos="zoom-in" data-aos-delay="100">
+                <div class="text-center" data-aos="zoom-in" data-aos-delay="700">
                     <i class="bi bi-lightbulb-fill text-6xl text-[#ff8800] mb-6"></i>
                     <h3 class="text-2xl font-semibold mb-3">Innovation</h3>
                     <p>Leverage generative AI to create innovative learning tools and resources tailored to your needs.</p>
                 </div>
                 <!-- Feature 3 -->
-                <div class="text-center" data-aos="zoom-in" data-aos-delay="200">
+                <div class="text-center" data-aos="zoom-in" data-aos-delay="800">
                     <i class="bi bi-person-fill-check text-6xl text-[#ff8800] mb-6"></i>
                     <h3 class="text-2xl font-semibold mb-3">Personalization</h3>
                     <p>Receive personalized academic assistance anytime you need it, enhancing your educational journey.</p>
@@ -92,23 +104,23 @@
         </section>
 
         <!-- Team Section -->
-        <section class="mb-24" data-aos="fade-up">
+        <section class="mb-24" data-aos="fade-up" data-aos-delay="900">
             <h2 class="text-3xl font-semibold text-center mb-12">Our Founders</h2>
             <div class="flex flex-col md:flex-row justify-center items-center space-y-12 md:space-y-0 md:space-x-24">
                 <!-- Arun Tiwari -->
-                <div class="text-center" data-aos="fade-up">
+                <div class="text-center" data-aos="fade-up" data-aos-delay="1000">
                     <img src="{{ url_for('static', filename='images/arun_tiwari.jpg') }}" alt="Arun Tiwari" class="w-32 h-32 rounded-full mx-auto mb-4 shadow-lg">
                     <h3 class="text-xl font-semibold">Arun Tiwari</h3>
                     <p class="mt-2">Co-founder with a passion for entrepreneurship, Arun has co-founded AT Media, Chomp’s Bistro, the FLIGHT program, and Fashionplugs253. He brings an unparalleled ambition to Horizon Learning.</p>
                 </div>
                 <!-- Theodore -->
-                <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+                <div class="text-center" data-aos="fade-up" data-aos-delay="1100">
                     <img src="{{ url_for('static', filename='images/theodore.jpg') }}" alt="Theodore" class="w-32 h-32 rounded-full mx-auto mb-4 shadow-lg">
                     <h3 class="text-xl font-semibold">Theodore</h3>
                     <p class="mt-2">Expert in computer engineering, Theodore is responsible for designing the core functions and user interface of Horizon Learning, ensuring a seamless user experience.</p>
                 </div>
                 <!-- Will Carroll -->
-                <div class="text-center" data-aos="fade-up" data-aos-delay="200">
+                <div class="text-center" data-aos="fade-up" data-aos-delay="1200">
                     <img src="{{ url_for('static', filename='images/will_carroll.jpg') }}" alt="Will Carroll" class="w-32 h-32 rounded-full mx-auto mb-4 shadow-lg">
                     <h3 class="text-xl font-semibold">Will Carroll</h3>
                     <p class="mt-2">2023 Washington XC State Champion and host of TedxAnnie Wright Schools, Will brings a winning mindset and a strong vision for the future of Horizon Learning.</p>
@@ -117,7 +129,7 @@
         </section>
 
         <!-- Roadmap Section -->
-        <section class="mb-24" data-aos="fade-up">
+        <section class="mb-24" data-aos="fade-up" data-aos-delay="1300">
             <div class="flex flex-col items-center">
                 <h2 class="text-3xl font-semibold mb-6">Our Journey</h2>
                 <p class="max-w-2xl text-center">Founded in 2024 by three Annie Wright students passionate about entrepreneurship, education, and technology, Horizon Learning is currently advancing through its development stage. By the end of 2024, we will launch at various educational institutions across Western Washington, connecting with investors and expanding our reach to revolutionize education as we know it.</p>
@@ -137,9 +149,37 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script>
         AOS.init({
-            duration: 800,
-            easing: 'ease-in-out',
-            once: true
+            duration: 1200, // Increased duration for smoother animations
+            easing: 'ease-in-out', // Smoother easing
+            delay: 100, // Global delay
+            once: true,
+            anchorPlacement: 'top-center',
+        });
+    </script>
+
+    <!-- Scroll to Top on Load -->
+    <script>
+        window.addEventListener('load', function() {
+            window.scrollTo(0, 0);
+        });
+    </script>
+
+    <!-- Optional: Loader Script (if loader is used) -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Delay to ensure all animations are ready
+            setTimeout(function() {
+                const loader = document.getElementById('loader');
+                if (loader) {
+                    loader.style.transition = 'opacity 0.5s ease';
+                    loader.style.opacity = '0';
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                    }, 500);
+                }
+                // Ensure the page scrolls to the top after loader is removed
+                window.scrollTo(0, 0);
+            }, 500); // 500ms delay before hiding the loader
         });
     </script>
 
